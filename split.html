@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Smart Text Splitter with Copy & Download</title>
+  <style>
+    textarea, .chunk {
+      width: 100%;
+      margin-top: 10px;
+      padding: 10px;
+      font-family: monospace;
+    }
+    .chunk {
+      background: #f4f4f4;
+      border: 1px solid #ccc;
+    }
+    .chunk-wrapper {
+      margin-bottom: 30px;
+    }
+    .copy-container {
+      text-align: center;
+      margin-top: 10px;
+    }
+    .copy-btn, .download-btn {
+      padding: 8px 12px;
+      margin: 0 5px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .copy-btn:hover, .download-btn:hover {
+      background: #0056b3;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Smart Split: Full Stop → Paragraph → Hard Cut</h2>
+  <textarea id="longText" rows="10" placeholder="Paste your 50,000-character story here..."></textarea>
+  <button onclick="splitText()">Split Smartly</button>
+
+  <div id="output"></div>
+
+  <script>
+    function splitText() {
+      const text = document.getElementById("longText").value;
+      const chunkSize = 12000;
+      const outputDiv = document.getElementById("output");
+      outputDiv.innerHTML = ""; // Clear previous output
+
+      let start = 0, chunkIndex = 1;
+      while (start < text.length) {
+        let end = start + chunkSize;
+        if (end >= text.length) {
+          end = text.length;
+        } else {
+          // Try to find last full stop
+          let lastStop = text.lastIndexOf('.', end);
+          if (lastStop > start) {
+            end = lastStop + 1;
+          } else {
+            // Fallback to paragraph
+            let lastPara = text.lastIndexOf('\n\n', end);
+            if (lastPara === -1 || lastPara <= start) {
+              lastPara = text.lastIndexOf('\n', end);
+            }
+            if (lastPara > start) {
+              end = lastPara + 1;
+            }
+          }
+        }
+
+        const chunk = text.slice(start, end).trim();
+
+        // Create wrapper
+        const wrapper = document.createElement("div");
+        wrapper.className = "chunk-wrapper";
+
+        // Textarea
+        const chunkElement = document.createElement("textarea");
+        chunkElement.className = "chunk";
+        chunkElement.rows = 10;
+        chunkElement.readOnly = true;
+        chunkElement.id = `chunk-${chunkIndex}`;
+        chunkElement.value = chunk;
+        wrapper.appendChild(chunkElement);
+
+        // Buttons container
+        const copyContainer = document.createElement("div");
+        copyContainer.className = "copy-container";
+
+        // Copy Button
+        const copyBtn = document.createElement("button");
+        copyBtn.className = "copy-btn";
+        copyBtn.innerText = "Copy";
+        copyBtn.onclick = () => {
+          navigator.clipboard.writeText(chunk).then(() => {
+            copyBtn.innerText = "Copied!";
+            setTimeout(() => copyBtn.innerText = "Copy", 2000);
+          });
+        };
+        copyContainer.appendChild(copyBtn);
+
+        // Download Button
+        const downloadBtn = document.createElement("button");
+        downloadBtn.className = "download-btn";
+        downloadBtn.innerText = "Download";
+        downloadBtn.onclick = () => {
+          const blob = new Blob([chunk], { type: "text/plain" });
+          const link = document.createElement("a");
+          link.href = URL.createObjectURL(blob);
+          link.download = `chunk-${chunkIndex}.txt`;
+          link.click();
+          URL.revokeObjectURL(link.href);
+        };
+        copyContainer.appendChild(downloadBtn);
+
+        wrapper.appendChild(copyContainer);
+        outputDiv.appendChild(wrapper);
+
+        start = end;
+        chunkIndex++;
+      }
+    }
+  </script>
+
+</body>
+</html>

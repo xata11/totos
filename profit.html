@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Profit Margin Calculator</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin: 50px; }
+        input { margin: 10px; padding: 8px; width: 200px; }
+        button { padding: 10px; cursor: pointer; }
+        .result { font-size: 18px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h2>Profit Margin Calculator</h2>
+    <label>Ad Spend (₦): </label>
+    <input type="text" id="adSpend" placeholder="Enter amount in Naira"><br>
+    
+    <label>Revenue from Monetag ($): </label>
+    <input type="text" id="revenue" placeholder="Enter revenue in USD"><br>
+    
+    <label>Exchange Rate (₦ per $): </label>
+    <input type="text" id="exchangeRate" value="1500"><br>
+    
+    <button onclick="calculateProfit()">Calculate</button>
+    
+    <div class="result" id="output"></div>
+    
+    <script>
+        function parseNumber(value) {
+            return parseFloat(value.replace(/,/g, '')) || 0;
+        }
+        
+        function formatNumber(value) {
+            return value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+        
+        function calculateProfit() {
+            let adSpend = parseNumber(document.getElementById('adSpend').value);
+            let revenueUSD = parseNumber(document.getElementById('revenue').value);
+            let exchangeRate = parseNumber(document.getElementById('exchangeRate').value);
+            
+            let revenueNGN = revenueUSD * exchangeRate;
+            let netProfit = revenueNGN - adSpend;
+            let netProfitMargin = (revenueNGN > 0) ? (netProfit / revenueNGN) * 100 : 0;
+            let profitPercentage = (adSpend > 0) ? (netProfit / adSpend) * 100 : 0;
+            
+            document.getElementById('output').innerHTML = `
+                
+                <p style="display: none;"><strong>Net Profit Margin:</strong> ${netProfitMargin.toFixed(2)}%</p>
+                <p><strong>Profit Percentage:</strong> ${profitPercentage.toFixed(2)}%</p>
+                <p><strong>Amount Made in Naira:</strong> ₦${formatNumber(revenueNGN)}</p>
+                <p><strong>Net Profit:</strong> ₦${formatNumber(netProfit)}</p>
+            `;
+        }
+    </script>
+</body>
+</html>

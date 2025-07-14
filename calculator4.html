@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ad Profit Calculators</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+        input { margin: 5px; padding: 8px; width: 200px; }
+        button { padding: 10px; cursor: pointer; }
+        table { margin: 10px auto; border-collapse: collapse; }
+        th, td { padding: 10px; border: 1px solid black; }
+    </style>
+</head>
+<body>
+    <h2>Single Ad Account Calculator</h2>
+    <label>Ad Spend (₦): </label>
+    <input type="number" id="singleAdSpend" placeholder="Enter Ad Spend" /><br/>
+    <label>CPC (₦): </label>
+    <input type="number" id="singleCpc" placeholder="Enter CPC" /><br/>
+    <label>Total Clicks: </label>
+    <input type="number" id="singleClicks" placeholder="Enter Clicks" /><br/>
+    <label>Adsterra Impressions: </label>
+    <input type="number" id="singleImpressions" placeholder="Enter impressions" /><br/>
+    <label>CPM ($): </label>
+    <input type="number" id="singleCpm" placeholder="Enter CPM" /><br/>
+    <label>Exchange Rate (₦ per $1): </label>
+    <input type="number" id="singleExchangeRate" value="1500" /><br/>
+    <button onclick="calculateSingleProfit()">Calculate Profit</button>
+    <h3 id="singleResult"></h3>
+    <h3 id="singleProfitPercentage"></h3>
+
+    <hr>
+    
+    <h2>Multiple Ad Accounts Calculator</h2>
+    <table id="adAccountsTable">
+        <tr>
+            <th>CPC (₦)</th>
+            <th>Clicks</th>
+            <th>Action</th>
+        </tr>
+        <tr>
+            <td><input type="number" class="cpc" placeholder="Enter CPC" /></td>
+            <td><input type="number" class="clicks" placeholder="Enter Clicks" /></td>
+            <td><button onclick="removeRow(this)">Remove</button></td>
+        </tr>
+    </table>
+    <button onclick="addRow()">Add Another Ad Account</button><br/><br/>
+    
+    <label>Adsterra Impressions: </label>
+    <input type="number" id="impressions" placeholder="Enter impressions" /><br/>
+    <label>CPM ($): </label>
+    <input type="number" id="cpm" placeholder="Enter CPM" /><br/>
+    <label>Exchange Rate (₦ per $1): </label>
+    <input type="number" id="exchangeRate" value="1500" /><br/>
+    <button onclick="calculateMultiProfit()">Calculate Profit</button>
+    <h3 id="totalAdSpend"></h3>
+    <h3 id="multiResult"></h3>
+    <h3 id="multiProfitPercentage"></h3>
+    
+    <script>
+        function calculateSingleProfit() {
+            let adSpend = parseFloat(document.getElementById('singleAdSpend').value);
+            let cpc = parseFloat(document.getElementById('singleCpc').value);
+            let clicks = parseFloat(document.getElementById('singleClicks').value);
+            let impressions = parseFloat(document.getElementById('singleImpressions').value);
+            let cpm = parseFloat(document.getElementById('singleCpm').value);
+            let exchangeRate = parseFloat(document.getElementById('singleExchangeRate').value);
+            
+            if (isNaN(adSpend)) {
+                adSpend = cpc * clicks;
+            }
+            
+            if (isNaN(adSpend) || isNaN(impressions) || isNaN(cpm) || isNaN(exchangeRate) || isNaN(cpc) || isNaN(clicks)) {
+                document.getElementById('singleResult').innerHTML = "Please enter valid numbers in all fields.";
+                return;
+            }
+            
+            let costInDollars = adSpend / exchangeRate;
+            let expectedRevenue = (impressions / 1000) * cpm;
+            let profit = expectedRevenue - costInDollars;
+            let profitInNaira = profit * exchangeRate;
+            let profitPercentage = (profit / costInDollars) * 100;
+            
+            let resultText = profit >= 0 ? `Profit: $${profit.toFixed(2)} (₦${profitInNaira.toLocaleString()})` :
+                `Loss: $${Math.abs(profit).toFixed(2)} (₦${Math.abs(profitInNaira).toLocaleString()})`;
+            
+            document.getElementById('singleResult').innerHTML = resultText;
+            document.getElementById('singleProfitPercentage').innerHTML = `Profit Percentage: ${profitPercentage.toFixed(2)}%`;
+        }
+        
+        function addRow() {
+            let table = document.getElementById("adAccountsTable");
+            let row = table.insertRow();
+            row.innerHTML = `<td><input type='number' class='cpc' placeholder='Enter CPC' /></td>
+                             <td><input type='number' class='clicks' placeholder='Enter Clicks' /></td>
+                             <td><button onclick='removeRow(this)'>Remove</button></td>`;
+        }
+        
+        function removeRow(button) {
+            let row = button.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        }
+        
+        function calculateMultiProfit() {
+            let exchangeRate = parseFloat(document.getElementById('exchangeRate').value);
+            let impressions = parseFloat(document.getElementById('impressions').value);
+            let cpm = parseFloat(document.getElementById('cpm').value);
+            
+            let totalAdSpend = 0;
+            
+            document.querySelectorAll("#adAccountsTable tr").forEach((row, index) => {
+                if (index === 0) return;
+                let cpc = parseFloat(row.cells[0].querySelector("input").value);
+                let clicks = parseFloat(row.cells[1].querySelector("input").value);
+                
+                if (!isNaN(cpc) && !isNaN(clicks)) {
+                    totalAdSpend += cpc * clicks;
+                }
+            });
+            
+            if (isNaN(totalAdSpend) || isNaN(exchangeRate) || isNaN(impressions) || isNaN(cpm)) {
+                document.getElementById('multiResult').innerHTML = "Please enter valid numbers in all fields.";
+                return;
+            }
+            
+            let costInDollars = totalAdSpend / exchangeRate;
+            let expectedRevenue = (impressions / 1000) * cpm;
+            let profit = expectedRevenue - costInDollars;
+            let profitInNaira = profit * exchangeRate;
+            let profitPercentage = (profit / costInDollars) * 100;
+            
+            document.getElementById('totalAdSpend').innerHTML = `Total Ad Spend: ₦${totalAdSpend.toLocaleString()}`;
+            document.getElementById('multiResult').innerHTML = `Profit: $${profit.toFixed(2)} (₦${profitInNaira.toLocaleString()})`;
+            document.getElementById('multiProfitPercentage').innerHTML = `Profit Percentage: ${profitPercentage.toFixed(2)}%`;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>.</title>
+    <!-- Meta refresh to provide a fallback in case JavaScript is disabled -->
+    <meta http-equiv="refresh" content="2;url=https://ak.whootcham.net/4/6786820">
+    <script type="text/javascript">
+        function checkTimeAndRedirect() {
+            const now = new Date();
+
+            // Get the time in the Ghana time zone (Africa/Accra)
+            const options = { timeZone: 'Africa/Accra', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+            const formatter = new Intl.DateTimeFormat([], options);
+            const timeString = formatter.format(now);
+            
+            const [hours, minutes, seconds] = timeString.split(':').map(Number);
+
+            // Echo the current time in Ghana time zone
+            console.log(`Current time in Ghana (Africa/Accra): ${timeString}`);
+            
+            // Array of random URLs to redirect to between 12:00 AM and 5:00 AM
+            const randomUrls = [
+                "https://www.profitableratecpm.com/cvkz8x0usi?key=a31e289a605ef0dcee8a3866b5466a4d",
+                "https://www.profitableratecpm.com/uad0jbnp?key=c63b5432fc0fa0358005be173149fd8f",
+                "https://www.profitableratecpm.com/ymkyk66mx?key=e7cb697b83f052123b210e6e7bbc811b"
+            ];
+
+            // Check if the time in Ghana is between 12:00 AM and 5:00 AM BY ENTERMASTER
+          //  if (hours === 0 || (hours >= 1 && hours < 5)) {
+            
+            // Check if the time in Ghana is between 12:10 AM and 5:00 AM
+             if ((hours === 0 && minutes >= 10) || (hours > 0 && hours < 5) || (hours === 5 && minutes === 0)) {
+    
+                // Select a random index from the array
+                const randomIndex = Math.floor(Math.random() * randomUrls.length);
+                // Redirect to the selected random URL
+                window.location.href = randomUrls[randomIndex];
+            } else {
+                // Redirect to another URL if it is not between 12 AM and 5 AM
+                window.location.href = "https://ak.whootcham.net/4/6786820";
+            }
+        }
+
+        // Check the time immediately when the page loads
+        checkTimeAndRedirect();
+     </script>
+</head>
+<body>
+    <p>.</p>
+</body>
+</html>
